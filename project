@@ -1,1 +1,53 @@
-
+import requests
+import json
+import datetime
+import time
+data=list()
+date_object = str(datetime.date.today())
+i=int(date_object[-1:])
+date=(date_object).replace(date_object[-1:],str(i-1))
+defiswap_list=['Pancake v2', 'Mdex', 'Pancake', 'BakerySwap', 'ApeSwap', 'SwapLiquidity', 'CoinSwap', '1inch Liquidity Protocol', 'StreetSwap', 'Mochi', 'Anyswap', 'BSCSwap', 'Uranium', 'Uniswap', 'SushiSwap', 'Balancer', 'Bancor Network', 'Curve', 'Zerox Exchange', 'Dodo', '1inch', 'dYdX', '1inch Liquidity Protocol', 'Kyber Network', 'Matcha', 'CRO DeFi Swap', 'AirSwap', 'SakeSwap', 'Bamboo Relay', 'Mooniswap', 'Cream Pool Token', 'IDEX', 'CellSwap', 'EtherDelta', 'SingularX', 'Miniswap', 'TokenTrove', 'Cofix', 'TacoSwap', 'FFFSwap', 'SwapX', 'LedgerDex', 'ZeusSwap', 'BestSwap', 'HiSwap']
+def Swap():
+    j=0
+    while(0<len(defiswap_list)):
+        bsc="(network: bsc)"
+        eth=""
+        time.sleep(20) 
+        query = """{
+            ethereum"""+(bsc if j <= 12 else eth)+"""{
+                dexTrades(
+                options: {desc: "count"}
+                date: {in: """+'"'+date+'"'+"""}
+                exchangeName: {is: """+'"'+defiswap_list[j]+'"'+"""}
+                ) {
+                count
+                quotePrice
+                tradeAmount(in: USD)
+                baseCurrency {
+                    address
+                    symbol
+                }
+                quoteCurrency {
+                    address
+                    symbol
+                }
+                smartContract {
+                    address {
+                    address
+                    }
+                }
+                }
+            }
+            }"""
+        url = 'https://graphql.bitquery.io'
+        r = requests.post(url, json={'query': query})
+        print(query)
+        json_data = json.loads(r.text)
+        parced =json_data["data"]["ethereum"]["dexTrades"]
+        for i in parced:
+            data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"]])
+        print(j)
+        j+=1
+        print(data)
+    print(data)
+Swap()
