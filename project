@@ -36,7 +36,14 @@ def Swap():
                     address
                     }
                 }
-                }
+                }address(address: {is: "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"}) {
+      balances {
+        currency {
+          symbol
+        }
+        value
+      }
+    }
             }
             }"""
         url = 'https://graphql.bitquery.io'
