@@ -48,12 +48,10 @@ def Swap():
             }"""
         url = 'https://graphql.bitquery.io'
         r = requests.post(url, json={'query': query})
-        print(query)
         json_data = json.loads(r.text)
         parced =json_data["data"]["ethereum"]["dexTrades"]
         for i in parced:
-            data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"]])
-        print(j)
+            data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"]]
         j+=1
         print(data)
     print(data)
