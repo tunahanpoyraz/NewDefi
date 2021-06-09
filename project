@@ -8,7 +8,7 @@ defiswap_list=['Pancake v2', 'Mdex', 'Pancake', 'BakerySwap', 'ApeSwap', 'SwapLi
 j=0
 def Swap():
     global j
-    while(j<=45):
+    while(j<=len(defiswap_list)):
         time.sleep(6)
         bsc="(network: bsc)"
         eth=""
