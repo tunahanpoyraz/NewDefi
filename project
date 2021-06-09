@@ -1,18 +1,17 @@
-import requests
-import json
-import datetime
-import time
+import requests,json,datetime,csv,time
 data=list()
-date_object = str(datetime.date.today())
+address=list()
+date_object = str(datetime.date.today())#timestamp-after
 i=int(date_object[-1:])
 date=(date_object).replace(date_object[-1:],str(i-1))
 defiswap_list=['Pancake v2', 'Mdex', 'Pancake', 'BakerySwap', 'ApeSwap', 'SwapLiquidity', 'CoinSwap', '1inch Liquidity Protocol', 'StreetSwap', 'Mochi', 'Anyswap', 'BSCSwap', 'Uranium', 'Uniswap', 'SushiSwap', 'Balancer', 'Bancor Network', 'Curve', 'Zerox Exchange', 'Dodo', '1inch', 'dYdX', '1inch Liquidity Protocol', 'Kyber Network', 'Matcha', 'CRO DeFi Swap', 'AirSwap', 'SakeSwap', 'Bamboo Relay', 'Mooniswap', 'Cream Pool Token', 'IDEX', 'CellSwap', 'EtherDelta', 'SingularX', 'Miniswap', 'TokenTrove', 'Cofix', 'TacoSwap', 'FFFSwap', 'SwapX', 'LedgerDex', 'ZeusSwap', 'BestSwap', 'HiSwap']
+j=0
 def Swap():
-    j=0
-    while(0<len(defiswap_list)):
+    global j
+    while(j<=45):
+        time.sleep(6)
         bsc="(network: bsc)"
         eth=""
-        time.sleep(20) 
         query = """{
             ethereum"""+(bsc if j <= 12 else eth)+"""{
                 dexTrades(
@@ -20,39 +19,44 @@ def Swap():
                 date: {in: """+'"'+date+'"'+"""}
                 exchangeName: {is: """+'"'+defiswap_list[j]+'"'+"""}
                 ) {
-                count
-                quotePrice
-                tradeAmount(in: USD)
-                baseCurrency {
-                    address
-                    symbol
-                }
-                quoteCurrency {
-                    address
-                    symbol
-                }
-                smartContract {
-                    address {
-                    address
-                    }
-                }
-                }address(address: {is: "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"}) {
-      balances {
-        currency {
-          symbol
+      quotePrice
+      count
+      tradeAmount(in: USD)
+      baseCurrency {
+        address
+        symbol
+      }
+      quoteCurrency {
+        address
+        symbol
+      }
+      smartContract {
+        address {
+          address
         }
-        value
       }
     }
-            }
-            }"""
+  }
+ }"""     
         url = 'https://graphql.bitquery.io'
-        r = requests.post(url, json={'query': query})
-        json_data = json.loads(r.text)
-        parced =json_data["data"]["ethereum"]["dexTrades"]
-        for i in parced:
-            data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"]]
+        try:
+          fields = ['Exchange', 'Pair', 'Price', 'Volume',"Address"]
+          r = requests.post(url, json={'query': query} ,timeout=6)
+          if r:
+            json_data = json.loads(r.text)
+            parced =json_data["data"]["ethereum"]["dexTrades"]
+            print(j)
+            for i in parced:
+                data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"],i["smartContract"]["address"]["address"]]) 
+          else:
+              print(defiswap_list[j],"no data")
+              pass
+        except requests.Timeout as err:
+            print(err)
+            Swap()
         j+=1
-        print(data)
-    print(data)
+    with open('defilist', 'w', encoding="utf-8") as f:
+                  write = csv.writer(f)  
+                  write.writerow(fields)
+                  write.writerows(data)  
 Swap()
