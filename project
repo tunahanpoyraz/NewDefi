@@ -1,9 +1,6 @@
-import requests,json,datetime,csv,time
+import requests,json,csv,time,datetime
 data=list()
-address=list()
-date_object = str(datetime.date.today())#timestamp-after
-i=int(date_object[-1:])
-date=(date_object).replace(date_object[-1:],str(i-1))
+date=str(datetime.date.today() - datetime.timedelta(days=1))
 defiswap_list=['Pancake v2', 'Mdex', 'Pancake', 'BakerySwap', 'ApeSwap', 'SwapLiquidity', 'CoinSwap', '1inch Liquidity Protocol', 'StreetSwap', 'Mochi', 'Anyswap', 'BSCSwap', 'Uranium', 'Uniswap', 'SushiSwap', 'Balancer', 'Bancor Network', 'Curve', 'Zerox Exchange', 'Dodo', '1inch', 'dYdX', '1inch Liquidity Protocol', 'Kyber Network', 'Matcha', 'CRO DeFi Swap', 'AirSwap', 'SakeSwap', 'Bamboo Relay', 'Mooniswap', 'Cream Pool Token', 'IDEX', 'CellSwap', 'EtherDelta', 'SingularX', 'Miniswap', 'TokenTrove', 'Cofix', 'TacoSwap', 'FFFSwap', 'SwapX', 'LedgerDex', 'ZeusSwap', 'BestSwap', 'HiSwap']
 j=0
 def Swap():
@@ -48,6 +45,10 @@ def Swap():
             print(j)
             for i in parced:
                 data.append([defiswap_list[j],i["baseCurrency"]["symbol"]+"/"+i["quoteCurrency"]["symbol"],i["quotePrice"],i["tradeAmount"],i["smartContract"]["address"]["address"]]) 
+            with open('defilist3', 'w', encoding="utf-8") as f:
+                  write = csv.writer(f)  
+                  write.writerow(fields)
+                  write.writerows(data)
           else:
               print(defiswap_list[j],"no data")
               pass
@@ -55,8 +56,4 @@ def Swap():
             print(err)
             Swap()
         j+=1
-    with open('defilist', 'w', encoding="utf-8") as f:
-                  write = csv.writer(f)  
-                  write.writerow(fields)
-                  write.writerows(data)  
 Swap()
